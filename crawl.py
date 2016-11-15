@@ -16,7 +16,7 @@ def gatherSources(url, folder, includeExternalLinks):
 
 	#extract links
 	links = list(set(html.find_all('a')))
-
+	links = cleanList(url, links)
 	#create a folder for this site
 	pageName = urlify(html.title.string)
 
@@ -31,12 +31,42 @@ def gatherSources(url, folder, includeExternalLinks):
 	#Write all links to .txt file
 	with open(folder+pageName+"\links.txt","w") as fout:
 		for link in links:
-			fout.write(link.get('href')+"\n")
+			fout.write(link+"\n")
 
-   
+  	#create a folder structure to mirror site
+  	for link in links:
+  		#First step: remove the domain
+  		link.split(url)
+  		#remove .html ending, i.e last 4 chars
+  		if link.endswith(".html"):
+  			link = link[:-5]
+
+  		#remove full links
+  		if link.startswith(url):
+  			link = link.replace(url, "")
+
+  		#remove mailto links
+  		if link.startswith("mailto"):
+  			break
+
+  		#remove empty links
+  		if link.startswith("#"):
+  			break
+  		5
+  		subfolders = link.split('/')
+  		print link
+
 
 	return
 
+def cleanList(domain,l):
+	ret = []
+	#Function that sorts a list of links and removes all external links
+	for link in l:
+		if domain in link.get('href') or "http" not in link.get('href'):
+			ret.append(link.get('href'))
+
+	return ret
 
 def urlify(s):
 #Helper function to make strings url appropriate
